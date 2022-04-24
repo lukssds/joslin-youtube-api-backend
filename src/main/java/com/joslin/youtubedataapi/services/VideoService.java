@@ -26,24 +26,22 @@ public class VideoService {
 
     private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
-    private static final String REFRESH_TOKEN = "1//04V5g5w0x-VeYCgYIARAAGAQSNwF-L9IrHdLTzUzzq5xLFA3SJtEn3gFpz2hQ1bI-MeOHa_RAUScVOZEy1Avkp-NIWOfhCY2ZbIQ";
+    private static final String REFRESH_TOKEN = "1//04eYExyDNOaHxCgYIARAAGAQSNwF-L9Irb_AWp6dt3osQIDPcgK8jZWNzQkxBPFnQ8fYI3uufQelXQSqNZVOrNgewFJOLDvrWdco";
 
     private static YouTube youtube;
 
-    private  static final  String ACCESS_TOKEN= "ya29.A0ARrdaM9__p7JeMnb3qSR62ARHhnPRnjShKYdKAo9YDbjgGAoUTAnzWBB3rp9nTC8lq9WTt8vScJhkJbERLkMI1Ugjh1O42PWHtMdRT50q4pVe4ni1KnWUggtdmPrFJ1QH1ixFgg2CWgmmEqcdjUVmXdvuGEF";
+    //private  static final  String ACCESS_TOKEN= "";
 
 
     private Credential generateCredentialWithUserApprovedToken() throws IOException,
             GeneralSecurityException {
-
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, VideoService.class.getResourceAsStream("/api_key/client_secret.json"));
         return new GoogleCredential.Builder().setTransport(HTTP_TRANSPORT).setJsonFactory(JSON_FACTORY)
                 .setClientSecrets(clientSecrets).build().setRefreshToken(REFRESH_TOKEN);
     }
 
-    public List<Video> findVideosByPlayListId(String playListId) {
-
-        List<String> videoIds = new ArrayList<>();
+    public List<PlaylistItem> findVideosByPlayListId(String playListId) {
+        List<PlaylistItem> playlistItemList = new ArrayList<>();
         try {
 
             Credential credential = generateCredentialWithUserApprovedToken();
@@ -60,35 +58,26 @@ public class VideoService {
 
             if (channelsList != null) {
 
-                List<PlaylistItem> playlistItemList = new ArrayList<>();
-
                 YouTube.PlaylistItems.List playlistItemRequest =
-                        youtube.playlistItems().list("id,contentDetails");
+                        youtube.playlistItems().list("id,contentDetails,snippet");
                 playlistItemRequest.setPlaylistId(playListId);
 
 
                 playlistItemRequest.setFields(
-                        "items(contentDetails/videoId),nextPageToken,pageInfo");
-
-
+                        "items(snippet/title,snippet/description,snippet/thumbnails/high/url,contentDetails/videoId),nextPageToken,pageInfo");
                 String nextToken = "";
 
                 do {
+
                     playlistItemRequest.setPageToken(nextToken);
                     PlaylistItemListResponse playlistItemResult = playlistItemRequest.execute();
 
                     playlistItemList.addAll(playlistItemResult.getItems());
 
                     nextToken = playlistItemResult.getNextPageToken();
+
                 } while (nextToken != null);
-
-              for (int i=0; i < playlistItemList.size(); i++){
-
-                 String id =  playlistItemList.get(i).getContentDetails().getVideoId();
-                 videoIds.add(id);
-              }
             }
-
         }catch (GoogleJsonResponseException e) {
             e.printStackTrace();
             System.err.println("There was a service error: " + e.getDetails().getCode() + " : "
@@ -99,10 +88,8 @@ public class VideoService {
             e.printStackTrace();
         }
 
-        return findVideosById(videoIds);
+        return playlistItemList;
     }
-
-
 
     public  List<Video>findVideosById(List<String> videoIds){
 
@@ -131,9 +118,6 @@ public class VideoService {
                 VideoListResponse listResponse = listVideosRequest.execute();
 
                 videoList = listResponse.getItems();
-
-                //System.out.println("TESTE: " + videoList.size());
-                //prettyPrint(videoList.size(), videoList.iterator());
             }
 
         } catch (IOException e) {

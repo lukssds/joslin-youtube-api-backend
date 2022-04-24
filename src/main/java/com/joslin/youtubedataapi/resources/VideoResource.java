@@ -1,5 +1,6 @@
 package com.joslin.youtubedataapi.resources;
 
+import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.Video;
 import com.joslin.youtubedataapi.services.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,10 @@ public class VideoResource {
     private VideoService service;
 
     @GetMapping("/fetch-playlist-videos")
-    public ResponseEntity<List<Video>> findVideosByPlayListId(@RequestParam String id){
+    public ResponseEntity<List<PlaylistItem>> findVideosByPlayListId(@RequestParam String id){
 
-        List<Video> videos = service.findVideosByPlayListId(id);
+        List<PlaylistItem> videos = service.findVideosByPlayListId(id);
         return ResponseEntity.ok().body(videos);
-
     }
 
     @GetMapping("/fetch-videos-by-id/{id}")

@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### ignore API key ###
-.client_secret
+api_key/client_secret.json
