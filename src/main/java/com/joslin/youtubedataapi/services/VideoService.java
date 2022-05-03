@@ -58,13 +58,11 @@ public class VideoService {
 
             if (channelsList != null) {
 
-                YouTube.PlaylistItems.List playlistItemRequest =
-                        youtube.playlistItems().list("id,contentDetails,snippet");
+                YouTube.PlaylistItems.List playlistItemRequest = youtube.playlistItems().list("id,contentDetails,snippet");
                 playlistItemRequest.setPlaylistId(playListId);
 
 
-                playlistItemRequest.setFields(
-                        "items(snippet/title,snippet/description,snippet/thumbnails/high/url,contentDetails/videoId),nextPageToken,pageInfo");
+                playlistItemRequest.setFields("items(snippet/title,snippet/description,snippet/thumbnails,contentDetails/videoId),nextPageToken,pageInfo");
                 String nextToken = "";
 
                 do {

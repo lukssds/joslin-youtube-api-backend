@@ -9,15 +9,18 @@ import com.joslin.youtubedataapi.entities.ThumbnailInformation;
 
 public class VideoHelper {
 	
-	public static List<ThumbnailInformation> buildThumbnails(Map<String, Thumbnail> thumbList) {
+	public static List<ThumbnailInformation> buildThumbnails(String videoId, Map<String, Thumbnail> thumbList) {
 		List<ThumbnailInformation> thumbnailInformations = new ArrayList<ThumbnailInformation>();
 		
 		for (Map.Entry<String,Thumbnail> thumb : thumbList.entrySet()) {
 			ThumbnailInformation thumbnailInformation = new ThumbnailInformation();
 			thumbnailInformation.setHeight(thumb.getValue().getHeight());
+			thumbnailInformation.setVideoId(videoId);
 			thumbnailInformation.setWidth(thumb.getValue().getWidth());
 			thumbnailInformation.setUrl(thumb.getValue().getUrl());
 			thumbnailInformation.setType(findType(thumb.getValue().getHeight()));
+			
+			thumbnailInformations.add(thumbnailInformation);
 		}
 		
 		 

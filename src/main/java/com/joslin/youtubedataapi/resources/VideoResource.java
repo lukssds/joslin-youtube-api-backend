@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.Video;
 import com.joslin.youtubedataapi.entities.Playlist;
+import com.joslin.youtubedataapi.entities.ThumbnailInformation;
 import com.joslin.youtubedataapi.entities.VideoInformation;
 import com.joslin.youtubedataapi.helper.VideoHelper;
 import com.joslin.youtubedataapi.services.VideoInformationService;
@@ -47,18 +48,20 @@ public class VideoResource {
     	
         List<PlaylistItem> videos = videoService.findVideosByPlayListId(id);
         List<VideoInformation> videoInformationList = new ArrayList<VideoInformation>();
+
         
         for(PlaylistItem video : videos) {
     		VideoInformation videoInformation = new VideoInformation();
     		videoInformation.setDescription(video.getSnippet().getDescription());
-    		videoInformation.setId(video.getId());
+    		videoInformation.setId(video.getContentDetails().getVideoId());
     		videoInformation.setPlaylist(id);
-    		videoInformation.setThumbnail(VideoHelper.buildThumbnails(video.getSnippet().getThumbnails()));
+    		videoInformation.setThumbnail(VideoHelper.buildThumbnails(video.getContentDetails().getVideoId(), video.getSnippet().getThumbnails()));
     		videoInformation.setTitle(video.getSnippet().getTitle());
     		
     		videoInformationList.add(videoInformation);
         }
-    	Playlist savedVideos = videoInformationService.insert(videoInformationList, id);
+        
+    	Playlist savedVideos = videoInformationService.insertVideos(videoInformationList, id);
     	return ResponseEntity.ok().body(savedVideos);
     }
 }

@@ -2,7 +2,10 @@ package com.joslin.youtubedataapi.entities;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
@@ -12,23 +15,23 @@ public class VideoInformation {
 	@Id
 	private String id;
 	private String title;
+	
+	@Column(length=10485760)
 	private String description;
 	private String playlist;
-	private String embedHtml;
 	
-	@OneToMany(mappedBy = "videoInformation")
+	@OneToMany(mappedBy = "videoInformation", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<ThumbnailInformation> thumbnail;
 	
 	public VideoInformation() {
 		
 	}
 
-	public VideoInformation(String id, String title, String description, String playlist, String embedHtml, List<ThumbnailInformation> thumbnail) {
+	public VideoInformation(String id, String title, String description, String playlist, List<ThumbnailInformation> thumbnail) {
 		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.playlist = playlist;
-		this.embedHtml = embedHtml;
 		this.thumbnail = thumbnail;
 	}
 
@@ -62,14 +65,6 @@ public class VideoInformation {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public String getEmbedHtml() {
-		return embedHtml;
-	}
-
-	public void setEmbedHtml(String embedHtml) {
-		this.embedHtml = embedHtml;
 	}
 
 	public List<ThumbnailInformation> getThumbnail() {

@@ -1,39 +1,37 @@
 package com.joslin.youtubedataapi.entities;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity(name = "thumbnail") 
 public class ThumbnailInformation {
 	
 	@Id
+	private String url;
+
 	private String videoId;
 	private String type;
 	private Long height;
-	private String url;
 	private Long width;
 	
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER,  cascade=CascadeType.ALL)
+	@JoinColumn(name="videoInformation")
 	private VideoInformation videoInformation;
 	
 	public ThumbnailInformation() {
 
 	}
 
-	public ThumbnailInformation(String videoId, String type, Long height, String url, Long width) {
-		this.videoId = videoId;
+	public ThumbnailInformation(String type, String videoId, Long height, String url, Long width, VideoInformation videoInformation) {
 		this.type = type;
 		this.height = height;
 		this.url = url;
 		this.width = width;
-	}
-
-	public String getVideoId() {
-		return videoId;
-	}
-
-	public void setVideoId(String videoId) {
+		this.videoInformation = videoInformation;
 		this.videoId = videoId;
 	}
 
@@ -67,6 +65,22 @@ public class ThumbnailInformation {
 
 	public void setWidth(Long width) {
 		this.width = width;
+	}
+
+	public VideoInformation getVideoInformation() {
+		return videoInformation;
+	}
+
+	public void setVideoInformation(VideoInformation videoInformation) {
+		this.videoInformation = videoInformation;
+	}
+
+	public String getVideoId() {
+		return videoId;
+	}
+
+	public void setVideoId(String videoId) {
+		this.videoId = videoId;
 	}
 
 }

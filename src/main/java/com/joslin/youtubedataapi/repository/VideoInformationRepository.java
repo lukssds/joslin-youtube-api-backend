@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.joslin.youtubedataapi.entities.VideoInformation;
 
 public interface VideoInformationRepository extends JpaRepository<VideoInformation, String> {
-	
+
 	List<VideoInformation> findByPlaylist(String id);
 
 }
