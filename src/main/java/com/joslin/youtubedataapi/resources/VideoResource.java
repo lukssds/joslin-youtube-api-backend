@@ -47,19 +47,9 @@ public class VideoResource {
     public ResponseEntity<Playlist> insert(@RequestParam String id) {
     	
         List<PlaylistItem> videos = videoService.findVideosByPlayListId(id);
-        List<VideoInformation> videoInformationList = new ArrayList<VideoInformation>();
-
-        
-        for(PlaylistItem video : videos) {
-    		VideoInformation videoInformation = new VideoInformation();
-    		videoInformation.setDescription(video.getSnippet().getDescription());
-    		videoInformation.setId(video.getContentDetails().getVideoId());
-    		videoInformation.setPlaylist(id);
-    		videoInformation.setThumbnail(VideoHelper.buildThumbnails(video.getContentDetails().getVideoId(), video.getSnippet().getThumbnails()));
-    		videoInformation.setTitle(video.getSnippet().getTitle());
-    		
-    		videoInformationList.add(videoInformation);
-        }
+        List<VideoInformation> videoInformationList = videoInformationService.buildVideoInformationList(videos, id);
+                
+        videoInformationService.deleteRemovedVideos(id, videoInformationList);
         
     	Playlist savedVideos = videoInformationService.insertVideos(videoInformationList, id);
     	return ResponseEntity.ok().body(savedVideos);

@@ -7,9 +7,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.api.services.youtube.model.PlaylistItem;
 import com.joslin.youtubedataapi.entities.Playlist;
 import com.joslin.youtubedataapi.entities.ThumbnailInformation;
 import com.joslin.youtubedataapi.entities.VideoInformation;
+import com.joslin.youtubedataapi.helper.VideoHelper;
 import com.joslin.youtubedataapi.repository.ThumbnailInformationRepository;
 import com.joslin.youtubedataapi.repository.VideoInformationRepository;
 
@@ -57,5 +59,50 @@ public class VideoInformationService {
     		thumbRepository.save(thumb);
     	}
     }
+    
+    public List<VideoInformation> buildVideoInformationList(List<PlaylistItem> videos, String playlistId) {
+    	
+        List<VideoInformation> videoInformationList = VideoHelper.buildVideoInformationList(videos, playlistId);
+        
+        return videoInformationList;
+    }
+    
+    public void deleteRemovedVideos(String id, List<VideoInformation> videoInformationList) {
+    	
+    	List<VideoInformation> deletedVideosList = new ArrayList<VideoInformation>();
+
+    	List<VideoInformation> savedVideos = videoRepository.findByPlaylist(id);
+    	
+    	boolean deleteVideo = false;
+        
+    	if(!savedVideos.isEmpty() && savedVideos != null) {
+    		for(VideoInformation savedVideo : savedVideos) {
+    			for(VideoInformation videoInfoList : videoInformationList) {
+    				if(savedVideo.getId().equals(videoInfoList.getId())) {
+    					deleteVideo = false;
+    					break;
+    				}
+    				else {
+    					deleteVideo = true;
+    				}
+    			}
+ 				if(deleteVideo) {
+					deletedVideosList.add(savedVideo);
+				}
+    		}
+    	}
+    	
+        if(!deletedVideosList.isEmpty() && deletedVideosList != null) {
+        	deleteVideos(deletedVideosList);
+        } 	
+    }
+    
+    private void deleteVideos(List<VideoInformation> deletedVideosList) {
+    	
+    	for(VideoInformation video : deletedVideosList) {
+    		videoRepository.deleteById(video.getId());
+    	}
+    }
+    
     
 }
