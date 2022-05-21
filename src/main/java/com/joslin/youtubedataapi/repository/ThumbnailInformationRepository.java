@@ -14,6 +14,7 @@ public interface ThumbnailInformationRepository extends JpaRepository<ThumbnailI
 	List<ThumbnailInformation> findThumbByVideoId(@Param("id") String id);
 	
 	
+	
 //	List<ThumbnailInformation> findByVideoInformation(String id);
 	
 

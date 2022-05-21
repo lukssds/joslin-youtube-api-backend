@@ -94,6 +94,7 @@ public class VideoInformationService {
     	
         if(!deletedVideosList.isEmpty() && deletedVideosList != null) {
         	deleteVideos(deletedVideosList);
+        	deleteRemovedVideosThumbs(deletedVideosList);
         } 	
     }
     
@@ -104,5 +105,22 @@ public class VideoInformationService {
     	}
     }
     
+    private void deleteRemovedVideosThumbs(List<VideoInformation> deletedVideosList) {
+    	
+    	List<ThumbnailInformation> deleteThumbs = new ArrayList<ThumbnailInformation>();
+    	
+    	for(VideoInformation video : deletedVideosList) {
+    		deleteThumbs.addAll(thumbRepository.findThumbByVideoId(video.getId()));
+    	}
+    	
+    	deleteVideosThumbs(deleteThumbs);
+    }
+    
+    private void deleteVideosThumbs(List<ThumbnailInformation> deleteThumbs) {
+    	
+    	for(ThumbnailInformation thumb : deleteThumbs) {
+    		thumbRepository.delete(thumb);
+    	}
+    }
     
 }
