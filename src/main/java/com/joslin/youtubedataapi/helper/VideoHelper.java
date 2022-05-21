@@ -4,10 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.Thumbnail;
 import com.joslin.youtubedataapi.entities.ThumbnailInformation;
+import com.joslin.youtubedataapi.entities.VideoInformation;
 
 public class VideoHelper {
+	
+    public static List<VideoInformation> buildVideoInformationList(List<PlaylistItem> videos, String playlistId) {
+        List<VideoInformation> videoInformationList = new ArrayList<VideoInformation>();
+        
+        for(PlaylistItem video : videos) {
+    		VideoInformation videoInformation = new VideoInformation();
+    		videoInformation.setDescription(video.getSnippet().getDescription());
+    		videoInformation.setId(video.getContentDetails().getVideoId());
+    		videoInformation.setPlaylist(playlistId);
+    		videoInformation.setThumbnail(buildThumbnails(video.getContentDetails().getVideoId(), video.getSnippet().getThumbnails()));
+    		videoInformation.setTitle(video.getSnippet().getTitle());
+    		
+    		videoInformationList.add(videoInformation);
+        }
+        
+        return videoInformationList;
+    }
 	
 	public static List<ThumbnailInformation> buildThumbnails(String videoId, Map<String, Thumbnail> thumbList) {
 		List<ThumbnailInformation> thumbnailInformations = new ArrayList<ThumbnailInformation>();
