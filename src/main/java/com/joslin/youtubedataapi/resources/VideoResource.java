@@ -1,34 +1,57 @@
 package com.joslin.youtubedataapi.resources;
 
-import com.google.api.services.youtube.model.PlaylistItem;
-import com.google.api.services.youtube.model.Video;
-import com.joslin.youtubedataapi.services.VideoService;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.Video;
+import com.joslin.youtubedataapi.entities.Playlist;
+import com.joslin.youtubedataapi.entities.ThumbnailInformation;
+import com.joslin.youtubedataapi.entities.VideoInformation;
+import com.joslin.youtubedataapi.helper.VideoHelper;
+import com.joslin.youtubedataapi.services.VideoInformationService;
+import com.joslin.youtubedataapi.services.VideoService;
 
 @RestController
 public class VideoResource {
 
     @Autowired
-    private VideoService service;
+    private VideoService videoService;
+    
+    @Autowired
+    private VideoInformationService videoInformationService;
 
     @GetMapping("/fetch-playlist-videos")
     public ResponseEntity<List<PlaylistItem>> findVideosByPlayListId(@RequestParam String id){
 
-        List<PlaylistItem> videos = service.findVideosByPlayListId(id);
+        List<PlaylistItem> videos = videoService.findVideosByPlayListId(id);
         return ResponseEntity.ok().body(videos);
     }
 
     @GetMapping("/fetch-videos-by-id/{id}")
     public ResponseEntity<List<Video>> findVideosById(@PathVariable List<String> id){
 
-        List<Video> videos = service.findVideosById(id);
+        List<Video> videos = videoService.findVideosById(id);
         return ResponseEntity.ok().body(videos);
+    }
+    
+    @PostMapping("/insert")
+    public ResponseEntity<Playlist> insert(@RequestParam String id) {
+    	
+        List<PlaylistItem> videos = videoService.findVideosByPlayListId(id);
+        List<VideoInformation> videoInformationList = videoInformationService.buildVideoInformationList(videos, id);
+                
+        videoInformationService.deleteRemovedVideos(id, videoInformationList);
+        
+    	Playlist savedVideos = videoInformationService.insertVideos(videoInformationList, id);
+    	return ResponseEntity.ok().body(savedVideos);
     }
 }
